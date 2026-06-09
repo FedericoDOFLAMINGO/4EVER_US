@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para ti, mi amor</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Lora:ital,wght@0,400;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --rose:     #F7C5C5;
+    --blush:    #FADADD;
+    --lavender: #E8D5F0;
+    --mint:     #C8EAE0;
+    --peach:    #FFE0CC;
+    --ink:      #5A3A4A;
+    --soft:     #9A7A8A;
+    --paper:    #FFF8F8;
+    --accent:   #C06080;
+  }
+
+  /* ── WELCOME OVERLAY ── */
+  #welcome {
+    position: fixed; inset: 0; z-index: 999;
+    background: linear-gradient(135deg, #FADADD 0%, #E8D5F0 50%, #C8EAE0 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 1.2rem;
+    text-align: center;
+    padding: 2rem;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  #welcome.hide {
+    opacity: 0; transform: scale(1.04); pointer-events: none;
+  }
+  .welcome-heart {
+    font-size: 3.8rem;
+    animation: pulseHeart 1.4s ease-in-out infinite;
+  }
+  @keyframes pulseHeart {
+    0%,100% { transform: scale(1); }
+    50%      { transform: scale(1.18); }
+  }
+  .welcome-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(2.6rem, 8vw, 4rem);
+    color: var(--ink);
+    line-height: 1.1;
+  }
+  .welcome-sub {
+    font-family: 'Lora', serif;
+    font-size: 1rem;
+    color: var(--soft);
+    font-style: italic;
+    max-width: 320px;
+  }
+  .welcome-btn {
+    margin-top: 0.6rem;
+    background: linear-gradient(135deg, #F7C5C5, #E8D5F0);
+    border: 2px solid rgba(192,96,128,0.3);
+    border-radius: 50px;
+    padding: 0.75rem 2.4rem;
+    font-family: 'Lora', serif;
+    font-size: 1rem;
+    color: var(--ink);
+    cursor: pointer;
+    font-style: italic;
+    box-shadow: 0 4px 16px rgba(192,96,128,0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .welcome-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(192,96,128,0.3); }
+  .welcome-note {
+    font-size: 0.78rem;
+    color: var(--soft);
+    opacity: 0.75;
+    font-style: italic;
+  }
+
+  /* ── MAIN ── */
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--blush) 0%, var(--lavender) 40%, var(--mint) 100%);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 2rem 1rem 3rem;
+    font-family: 'Lora', Georgia, serif;
+  }
+  canvas#petals {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+  }
+  .card-wrap {
+    position: relative; z-index: 1;
+    max-width: 700px; width: 100%;
+    display: flex; flex-direction: column; gap: 1.6rem;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--paper);
+    border-radius: 28px;
+    padding: 3.5rem 3rem 3rem;
+    box-shadow: 0 4px 24px rgba(180,120,150,0.18), 0 1px 4px rgba(180,120,150,0.10);
+    position: relative; overflow: hidden;
+  }
+  .card::before {
+    content:''; position:absolute; top:-60px; right:-60px;
+    width:220px; height:220px;
+    background: radial-gradient(circle, rgba(247,197,197,0.45) 0%, transparent 70%);
+    border-radius:50%;
+  }
+  .card::after {
+    content:''; position:absolute; bottom:-50px; left:-50px;
+    width:200px; height:200px;
+    background: radial-gradient(circle, rgba(200,234,224,0.50) 0%, transparent 70%);
+    border-radius:50%;
+  }
+  .hearts-deco {
+    position:absolute; inset:0; pointer-events:none;
+    overflow:hidden; border-radius:28px; z-index:0;
+  }
+  .hearts-deco span {
+    position:absolute; font-size:0.75rem; opacity:0.18;
+    animation: drift 8s ease-in-out infinite;
+  }
+  @keyframes drift {
+    0%,100%{ transform:translateY(0) rotate(-10deg); }
+    50%    { transform:translateY(-14px) rotate(10deg); }
+  }
+  .hearts-deco span:nth-child(1){top:12%;left:8%;animation-delay:0s;}
+  .hearts-deco span:nth-child(2){top:70%;left:90%;animation-delay:1.5s;}
+  .hearts-deco span:nth-child(3){top:40%;left:5%;animation-delay:3s;}
+  .hearts-deco span:nth-child(4){top:85%;left:55%;animation-delay:0.8s;}
+  .hearts-deco span:nth-child(5){top:20%;left:88%;animation-delay:2.2s;}
+  .inner { position:relative; z-index:1; }
+
+  .deco-top {
+    text-align:center; font-size:1.6rem;
+    letter-spacing:0.6rem; color:var(--rose);
+    margin-bottom:0.4rem;
+    animation: floatHeart 3s ease-in-out infinite;
+  }
+  @keyframes floatHeart {
+    0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);}
+  }
+  .to-label {
+    text-align:center; font-family:'Great Vibes',cursive;
+    font-size:1.3rem; color:var(--soft); margin-bottom:0.2rem;
+  }
+  .title {
+    text-align:center; font-family:'Great Vibes',cursive;
+    font-size:clamp(2.8rem,7vw,4.2rem); color:var(--ink);
+    line-height:1.1; margin-bottom:2.2rem;
+  }
+  .divider {
+    display:flex; align-items:center; gap:0.8rem; margin-bottom:2rem;
+  }
+  .divider span { flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--rose),transparent); }
+  .divider i { color:var(--rose); font-size:1rem; font-style:normal; }
+  .body-text {
+    font-family:'Lora',serif; font-size:1.07rem;
+    line-height:1.92; color:var(--ink); font-style:italic;
+  }
+  .body-text p { margin-bottom:1.4rem; }
+  .body-text p:last-child { margin-bottom:0; }
+  .highlight { font-style:normal; font-weight:600; color:var(--accent); }
+  .signature-wrap {
+    margin-top:2.4rem; display:flex; flex-direction:column;
+    align-items:flex-end; gap:0.2rem;
+  }
+  .signature-label { font-family:'Lora',serif; font-size:0.88rem; color:var(--soft); font-style:italic; }
+  .signature { font-family:'Great Vibes',cursive; font-size:2.6rem; color:var(--ink); line-height:1; }
+  .deco-bottom {
+    text-align:center; font-size:1.2rem; letter-spacing:0.5rem;
+    color:rgba(200,160,180,0.5); margin-top:2rem;
+  }
+
+  /* ── PHOTO FRAME ── */
+  .photo-card {
+    background: var(--paper);
+    border-radius: 28px;
+    padding: 2rem 2rem 1.6rem;
+    box-shadow: 0 4px 24px rgba(180,120,150,0.18);
+    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+  }
+  .frame-label {
+    font-family: 'Great Vibes', cursive;
+    font-size: 1.9rem; color: var(--ink);
+  }
+  .frame-outer {
+    width: 100%; max-width: 460px;
+    padding: 10px;
+    background: linear-gradient(135deg, #F7C5C5, #E8D5F0, #C8EAE0, #FFE0CC, #F7C5C5);
+    background-size: 300% 300%;
+    animation: gradShift 6s ease infinite;
+    border-radius: 20px;
+    box-shadow: 0 6px 24px rgba(192,96,128,0.22);
+  }
+  @keyframes gradShift {
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+  }
+  .frame-inner {
+    background: #fff; border-radius: 13px; overflow: hidden;
+    aspect-ratio: 4/3; position: relative;
+  }
+  .frame-inner img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover;
+    opacity: 0; transition: opacity 0.9s ease;
+  }
+  .frame-inner img.visible { opacity: 1; }
+  .frame-dots {
+    display: flex; gap: 0.5rem; justify-content: center; margin-top: 0.2rem;
+  }
+  .frame-dots span {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--rose); opacity: 0.4;
+    transition: opacity 0.4s, background 0.4s;
+  }
+  .frame-dots span.active { opacity: 1; background: var(--accent); }
+  .frame-caption {
+    font-family: 'Lora', serif; font-style: italic;
+    font-size: 0.92rem; color: var(--soft); text-align: center;
+    min-height: 1.4em; transition: opacity 0.4s;
+  }
+
+  /* ── PROMISES SECTION ── */
+  .promises-card {
+    background: var(--paper);
+    border-radius: 28px;
+    padding: 2.2rem 2.4rem 2rem;
+    box-shadow: 0 4px 24px rgba(180,120,150,0.18);
+  }
+  .promises-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 2rem; color: var(--ink);
+    text-align: center; margin-bottom: 1.4rem;
+  }
+  .promise-list {
+    list-style: none; display: flex; flex-direction: column; gap: 0.9rem;
+  }
+  .promise-list li {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    font-family: 'Lora', serif; font-size: 0.97rem;
+    color: var(--ink); font-style: italic; line-height: 1.6;
+  }
+  .promise-list li span.icon {
+    font-size: 1.1rem; flex-shrink: 0; margin-top: 1px;
+  }
+
+  /* ── LOVE METER ── */
+  .meter-card {
+    background: var(--paper);
+    border-radius: 28px;
+    padding: 2rem 2.4rem 1.8rem;
+    box-shadow: 0 4px 24px rgba(180,120,150,0.18);
+    text-align: center;
+  }
+  .meter-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 1.8rem; color: var(--ink); margin-bottom: 1.2rem;
+  }
+  .meter-bar-wrap {
+    height: 22px; background: #f0dde5; border-radius: 50px;
+    overflow: hidden; position: relative;
+  }
+  .meter-bar {
+    height: 100%; width: 0;
+    background: linear-gradient(90deg, #F7C5C5, #C06080);
+    border-radius: 50px;
+    transition: width 2.4s cubic-bezier(.4,0,.2,1);
+  }
+  .meter-pct {
+    margin-top: 0.6rem;
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.2rem; color: var(--accent);
+  }
+  .meter-note {
+    font-family: 'Lora', serif; font-style: italic;
+    font-size: 0.88rem; color: var(--soft); margin-top: 0.3rem;
+  }
+
+  @media(max-width:480px){
+    .card{ padding:2.4rem 1.6rem 2rem; }
+    .body-text{ font-size:1rem; }
+    .photo-card, .promises-card, .meter-card { padding:1.6rem 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- AUDIO -->
+<audio id="bgAudio" loop preload="auto">
+  <source src="4ever.mp3" type="audio/mpeg">
+</audio>
+
+<!-- WELCOME OVERLAY -->
+<div id="welcome">
+  <div class="welcome-heart">♡</div>
+  <div class="welcome-title">Para mi Angy</div>
+  <p class="welcome-sub">Tengo algo muy especial esperándote del otro lado…</p>
+  <button class="welcome-btn" onclick="closeWelcome()">Abrir con amor 🌸</button>
+  <span class="welcome-note">♪ Se reproducirá una canción especial para ti</span>
+</div>
+
+<canvas id="petals"></canvas>
+
+<div class="card-wrap">
+
+  <!-- CARTA -->
+  <div class="card">
+    <div class="hearts-deco">
+      <span>♡</span><span>♡</span><span>♡</span><span>♡</span><span>♡</span>
+    </div>
+    <div class="inner">
+      <div class="deco-top">♡</div>
+      <div class="to-label">Para ti,</div>
+      <h1 class="title">mi princesita linda</h1>
+      <div class="divider"><span></span><i>✦</i><span></span></div>
+      <div class="body-text">
+        <p>Quiero que sepas, con cada letra que leas aquí,
+          que <span class="highlight">te quiero</span> con todo lo que soy.
+          Que <span class="highlight">te adoro</span>, que eres absolutamente
+          <span class="highlight">todo para mí</span>.</p>
+        <p>Mi vida entera es tuya. No como palabras bonitas
+          que se van con el viento, sino como una verdad
+          que llevo grabada en el pecho cada mañana
+          que me despierto pensando en ti.</p>
+        <p><span class="highlight">Mi niña, mi princesita</span> —
+          siempre serás tú mi noviecita linda,
+          mi futura esposa, la persona con la que
+          quiero construir cada sueño que me queda por vivir.</p>
+        <p>Sé que a veces puedo ser latoso,
+          a veces enfadoso, a veces torpe con las palabras
+          o con los momentos. Pero lo que nunca cambia,
+          lo que nunca va a cambiar, es que
+          <span class="highlight">te amo eternamente.</span></p>
+        <p>Me entrego a ti — plenamente, puramente,
+          sin reservas ni condiciones.
+          Eres a quien le doy todo mi amor,
+          toda mi vida, todo mi ser.
+          Todo lo que significa ser yo…
+          <span class="highlight">es tuyo</span>.</p>
+        <p>Solo tú. Siempre tú.</p>
+      </div>
+      <div class="signature-wrap">
+        <span class="signature-label">Con todo mi amor,</span>
+        <span class="signature">Tu Fer ♡</span>
+      </div>
+      <div class="deco-bottom">♡ ♡ ♡</div>
+    </div>
+  </div>
+
+  <!-- PHOTO FRAME -->
+  <div class="photo-card">
+    <div class="frame-label">Nosotros ♡</div>
+    <div class="frame-outer">
+      <div class="frame-inner" id="frameBox">
+        <img src="her.jpg"     alt="Ella" id="photo0" class="visible">
+        <img src="us.jpg"      alt="Nosotros" id="photo1">
+        <img src="ourLove.jpg" alt="Nuestro amor" id="photo2">
+      </div>
+    </div>
+    <div class="frame-dots">
+      <span class="active" id="dot0"></span>
+      <span id="dot1"></span>
+      <span id="dot2"></span>
+    </div>
+    <div class="frame-caption" id="photoCaption">Mi princesita hermosa 🌸</div>
+  </div>
+
+  <!-- PROMESAS -->
+  <div class="promises-card">
+    <div class="promises-title">Mis promesas para ti</div>
+    <ul class="promise-list">
+      <li><span class="icon">🌸</span> Amarte cada día más de lo que te amé el día anterior.</li>
+      <li><span class="icon">💫</span> Estar siempre para ti, en los buenos y en los malos momentos.</li>
+      <li><span class="icon">🤍</span> Ser mejor cada día para merecer todo el amor que me das.</li>
+      <li><span class="icon">✨</span> Hacerte sentir la mujer más especial del mundo, porque lo eres.</li>
+      <li><span class="icon">🌙</span> Nunca dejarte dormir sin saber cuánto te quiero.</li>
+      <li><span class="icon">💍</span> Construir contigo el futuro que los dos merecemos.</li>
+    </ul>
+  </div>
+
+  <!-- LOVE METER -->
+  <div class="meter-card">
+    <div class="meter-title">¿Cuánto te amo?</div>
+    <div class="meter-bar-wrap">
+      <div class="meter-bar" id="loveBar"></div>
+    </div>
+    <div class="meter-pct" id="lovePct">0%</div>
+    <div class="meter-note">…y eso que el medidor se quedó corto 💗</div>
+  </div>
+
+</div><!-- end card-wrap -->
+
+<script>
+/* ── WELCOME ── */
+function closeWelcome() {
+  document.getElementById('welcome').classList.add('hide');
+  const audio = document.getElementById('bgAudio');
+  audio.play().catch(() => {});
+}
+
+/* ── PETALS ── */
+const canvas = document.getElementById('petals');
+const ctx = canvas.getContext('2d');
+let W, H, petals = [];
+const colors = ['#F7C5C5','#FADADD','#E8D5F0','#C8EAE0','#FFE0CC','#FFF3CC'];
+function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
+function Petal(){
+  this.x=Math.random()*W; this.y=Math.random()*-H;
+  this.r=6+Math.random()*7; this.vx=(Math.random()-.5)*.8;
+  this.vy=0.6+Math.random()*.9; this.angle=Math.random()*Math.PI*2;
+  this.va=(Math.random()-.5)*.03;
+  this.color=colors[Math.floor(Math.random()*colors.length)];
+  this.alpha=0.45+Math.random()*.35;
+}
+Petal.prototype.update=function(){
+  this.x+=this.vx; this.y+=this.vy; this.angle+=this.va;
+  if(this.y>H+20){this.y=-20;this.x=Math.random()*W;}
+};
+Petal.prototype.draw=function(){
+  ctx.save(); ctx.globalAlpha=this.alpha;
+  ctx.translate(this.x,this.y); ctx.rotate(this.angle);
+  ctx.beginPath(); ctx.ellipse(0,0,this.r,this.r*.55,0,0,Math.PI*2);
+  ctx.fillStyle=this.color; ctx.fill(); ctx.restore();
+};
+for(let i=0;i<55;i++){const p=new Petal();p.y=Math.random()*H;petals.push(p);}
+function loop(){ ctx.clearRect(0,0,W,H); petals.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(loop); }
+loop();
+
+/* ── PHOTO SLIDESHOW ── */
+const photos   = ['photo0','photo1','photo2'];
+const captions = ['Mi princesita hermosa 🌸','Juntos somos perfectos 💑','Nuestro amor, para siempre 💗'];
+let current = 0;
+function showPhoto(idx){
+  photos.forEach((id,i)=>{
+    document.getElementById(id).classList.toggle('visible', i===idx);
+    document.getElementById('dot'+i).classList.toggle('active', i===idx);
+  });
+  const cap = document.getElementById('photoCaption');
+  cap.style.opacity=0;
+  setTimeout(()=>{cap.textContent=captions[idx];cap.style.opacity=1;},400);
+  current=idx;
+}
+setInterval(()=>{ showPhoto((current+1)%3); }, 10000);
+
+/* ── LOVE METER ── */
+window.addEventListener('load', ()=>{
+  setTimeout(()=>{
+    document.getElementById('loveBar').style.width='100%';
+    let n=0; const iv=setInterval(()=>{
+      n=Math.min(n+2,100);
+      document.getElementById('lovePct').textContent=
+        n<100 ? n+'%' : '∞ ♡';
+      if(n>=100) clearInterval(iv);
+    },28);
+  },800);
+});
+</script>
+</body>
+</html>
